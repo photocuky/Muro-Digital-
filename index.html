@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cadena de Abastecimiento vs Cadena de Suministro</title>
+  <style>
+    :root {
+      --navy: #0F2D4A;
+      --blue: #1B5E8A;
+      --teal: #0D7377;
+      --gold: #F5A623;
+      --light: #F0F7FF;
+      --white: #FFFFFF;
+      --gray: #64748B;
+      --lgray: #E8F4F8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #EEF4F9; color: #222; }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 60%, var(--teal) 100%);
+      padding: 60px 24px 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 80% 20%, rgba(13,115,119,0.3) 0%, transparent 60%);
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(245,166,35,0.2);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      padding: 6px 18px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      color: white;
+      font-size: clamp(24px, 5vw, 48px);
+      font-weight: 900;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .hero h1 span { color: var(--gold); }
+    .hero p {
+      color: rgba(255,255,255,0.8);
+      font-size: 15px;
+      max-width: 600px;
+      margin: 0 auto 24px;
+      position: relative;
+    }
+    .hero-meta {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      position: relative;
+    }
+    .hero-meta span {
+      color: rgba(255,255,255,0.7);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .hero-meta strong { color: white; }
+
+    /* ── NAV ── */
+    nav {
+      background: white;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0 24px;
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+    }
+    nav a {
+      color: var(--gray);
+      text-decoration: none;
+      padding: 14px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+    }
+    nav a:hover { color: var(--blue); border-bottom-color: var(--blue); }
+
+    /* ── MAIN ── */
+    main { max-width: 1100px; margin: 0 auto; padding: 40px 20px 80px; }
+    section { margin-bottom: 64px; }
+    .section-tag {
+      display: inline-block;
+      background: var(--teal);
+      color: white;
+      padding: 4px 14px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+    h2 {
+      font-size: clamp(22px, 4vw, 32px);
+      color: var(--navy);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+    .section-intro {
+      color: var(--gray);
+      font-size: 15px;
+      margin-bottom: 28px;
+      max-width: 700px;
+      line-height: 1.7;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      border: 1px solid #E8EEF4;
+    }
+    .card h3 { color: var(--navy); font-size: 18px; margin-bottom: 10px; }
+    .card p { color: var(--gray); font-size: 14px; line-height: 1.7; }
+
+    /* ── INTRO CARDS ── */
+    .intro-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .intro-card {
+      background: white;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      border-top: 4px solid var(--teal);
+    }
+    .intro-icon { font-size: 36px; margin-bottom: 14px; }
+    .intro-card h3 { color: var(--navy); font-size: 17px; margin-bottom: 8px; }
+    .intro-card p { color: var(--gray); font-size: 14px; line-height: 1.7; }
+
+    /* ── COMPARACIÓN ── */
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media(max-width: 600px) { .compare-grid { grid-template-columns: 1fr; } }
+    .compare-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .compare-header {
+      padding: 20px 24px;
+      color: white;
+      font-weight: 700;
+      font-size: 17px;
+    }
+    .compare-header.abastecimiento { background: var(--blue); }
+    .compare-header.suministro { background: var(--teal); }
+    .compare-body { padding: 20px 24px; }
+    .compare-item {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: #444;
+      line-height: 1.5;
+    }
+    .compare-item::before { content: "▸"; color: var(--gold); flex-shrink: 0; margin-top: 2px; }
+
+    /* ── FLUJO ── */
+    .flow-wrap {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .flow {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+    .flow-step {
+      background: var(--lgray);
+      border-radius: 12px;
+      padding: 14px 18px;
+      text-align: center;
+      min-width: 110px;
+    }
+    .flow-step .icon { font-size: 28px; margin-bottom: 6px; }
+    .flow-step .label { font-size: 12px; font-weight: 700; color: var(--navy); }
+    .flow-arrow { color: var(--teal); font-size: 22px; font-weight: 700; }
+
+    /* ── TABLA COMPARATIVA ── */
+    .table-wrap { overflow-x: auto; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+    table { width: 100%; border-collapse: collapse; background: white; font-size: 14px; }
+    thead { background: var(--navy); color: white; }
+    thead th { padding: 14px 18px; text-align: left; font-weight: 700; }
+    tbody tr:nth-child(even) { background: var(--lgray); }
+    tbody td { padding: 13px 18px; color: #444; line-height: 1.5; border-bottom: 1px solid #EEE; }
+    tbody td:first-child { font-weight: 700; color: var(--navy); }
+
+    /* ── IMPORTANCIA ── */
+    .imp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+    .imp-card {
+      background: white;
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      text-align: center;
+      border-bottom: 3px solid var(--gold);
+    }
+    .imp-icon { font-size: 32px; margin-bottom: 10px; }
+    .imp-card h4 { color: var(--navy); font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+    .imp-card p { color: var(--gray); font-size: 13px; line-height: 1.6; }
+
+    /* ── EMPRESA ── */
+    .empresa-card {
+      background: linear-gradient(135deg, var(--navy), var(--blue));
+      border-radius: 20px;
+      padding: 36px;
+      color: white;
+      margin-bottom: 20px;
+    }
+    .empresa-card h3 { font-size: 22px; margin-bottom: 6px; }
+    .empresa-card .sub { color: rgba(255,255,255,0.7); font-size: 14px; margin-bottom: 20px; }
+    .empresa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media(max-width: 500px) { .empresa-grid { grid-template-columns: 1fr; } }
+    .empresa-box {
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .empresa-box h4 { font-size: 13px; font-weight: 700; color: var(--gold); margin-bottom: 8px; letter-spacing: 0.5px; }
+    .empresa-box p { font-size: 13px; color: rgba(255,255,255,0.85); line-height: 1.6; }
+
+    /* ── CONCLUSIONES ── */
+    .concl-list { display: flex; flex-direction: column; gap: 12px; }
+    .concl-item {
+      background: white;
+      border-radius: 12px;
+      padding: 18px 22px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .concl-num {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--teal);
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .concl-item p { color: #444; font-size: 14px; line-height: 1.7; }
+
+    /* ── RECOMENDACIONES ── */
+    .rec-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .rec-card {
+      background: white;
+      border-radius: 14px;
+      padding: 22px;
+      border-left: 4px solid var(--gold);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .rec-card h4 { color: var(--navy); font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+    .rec-card p { color: var(--gray); font-size: 13px; line-height: 1.6; }
+
+    /* ── REFERENCIAS ── */
+    .ref-list { display: flex; flex-direction: column; gap: 10px; }
+    .ref-item {
+      background: white;
+      border-radius: 10px;
+      padding: 14px 20px;
+      font-size: 13px;
+      color: #444;
+      line-height: 1.7;
+      border-left: 3px solid var(--teal);
+      text-indent: -1.2em;
+      padding-left: 2.5em;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--navy);
+      color: rgba(255,255,255,0.6);
+      text-align: center;
+      padding: 28px 20px;
+      font-size: 13px;
+    }
+    footer strong { color: white; }
+
+    /* ── CITA ── */
+    .cita {
+      background: var(--lgray);
+      border-left: 4px solid var(--blue);
+      padding: 14px 20px;
+      border-radius: 0 10px 10px 0;
+      margin: 16px 0;
+      font-size: 14px;
+      color: #444;
+      font-style: italic;
+      line-height: 1.7;
+    }
+    .cita span { display: block; margin-top: 6px; font-style: normal; font-size: 12px; color: var(--gray); }
+
+    /* ── INTERACTIVO: TABS ── */
+    .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .tab-btn {
+      padding: 9px 20px;
+      border-radius: 20px;
+      border: 2px solid var(--blue);
+      background: white;
+      color: var(--blue);
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active, .tab-btn:hover { background: var(--blue); color: white; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ── ACCORDION ── */
+    .accordion { display: flex; flex-direction: column; gap: 8px; }
+    .acc-item { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .acc-header {
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--navy);
+      font-size: 15px;
+      user-select: none;
+    }
+    .acc-header:hover { background: var(--lgray); }
+    .acc-arrow { transition: transform 0.3s; font-size: 18px; color: var(--teal); }
+    .acc-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+    .acc-body.open { max-height: 400px; }
+    .acc-body-inner { padding: 0 20px 20px; font-size: 14px; color: var(--gray); line-height: 1.7; }
+    .acc-item.open .acc-arrow { transform: rotate(180deg); }
+
+    /* ── QUIZ ── */
+    .quiz-card { background: white; border-radius: 16px; padding: 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+    .quiz-q { font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 16px; }
+    .quiz-opts { display: flex; flex-direction: column; gap: 10px; }
+    .quiz-opt {
+      padding: 12px 18px;
+      border-radius: 10px;
+      border: 2px solid #E0E8F0;
+      cursor: pointer;
+      font-size: 14px;
+      color: #444;
+      transition: all 0.2s;
+    }
+    .quiz-opt:hover { border-color: var(--blue); background: var(--lgray); }
+    .quiz-opt.correct { border-color: #22C55E; background: #F0FFF4; color: #166534; }
+    .quiz-opt.wrong { border-color: #EF4444; background: #FEF2F2; color: #991B1B; }
+    .quiz-feedback { margin-top: 14px; padding: 12px 16px; border-radius: 10px; font-size: 14px; display: none; }
+    .quiz-feedback.show { display: block; }
+    .quiz-feedback.ok { background: #F0FFF4; color: #166534; border: 1px solid #86EFAC; }
+    .quiz-feedback.fail { background: #FEF2F2; color: #991B1B; border: 1px solid #FCA5A5; }
+    .quiz-next { margin-top: 14px; padding: 10px 24px; background: var(--blue); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px; display: none; }
+    .quiz-next.show { display: inline-block; }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">LINV-01 · DISTRIBUCIÓN Y TRANSPORTES</div>
+  <h1>Cadena de <span>Abastecimiento</span><br>vs Cadena de <span>Suministro</span></h1>
+  <p>Muro Digital Colaborativo — Investigación académica sobre dos conceptos clave de la logística empresarial moderna</p>
+  <div class="hero-meta">
+    <span>👤 <strong>Andy Chaves Herrera</strong></span>
+    <span>🏛️ <strong>Universidad San Marcos</strong></span>
+    <span>📅 <strong>2026</strong></span>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#intro">Introducción</a>
+  <a href="#conceptos">Conceptos</a>
+  <a href="#diferencias">Diferencias</a>
+  <a href="#flujo">Flujo</a>
+  <a href="#importancia">Importancia</a>
+  <a href="#empresa">Empresa</a>
+  <a href="#conclusiones">Conclusiones</a>
+  <a href="#quiz">Quiz</a>
+  <a href="#referencias">Referencias</a>
+</nav>
+
+<main>
+
+  <!-- ── INTRODUCCIÓN ── -->
+  <section id="intro">
+    <div class="section-tag">INTRODUCCIÓN</div>
+    <h2>¿Por qué estudiar estos conceptos?</h2>
+    <p class="section-intro">En el mundo empresarial moderno, la eficiencia en la gestión de materiales, productos e información determina la competitividad de cualquier organización. Dos términos frecuentemente confundidos —cadena de abastecimiento y cadena de suministro— son pilares fundamentales de esta gestión.</p>
+
+    <div class="cita">
+      "La gestión efectiva de la cadena de suministro es la fuente de ventaja competitiva sostenible más importante en el entorno empresarial actual."
+      <span>— Chopra & Meindl (2021). Supply Chain Management.</span>
+    </div>
+
+    <div class="intro-grid">
+      <div class="intro-card">
+        <div class="intro-icon">🎯</div>
+        <h3>Objetivo de esta investigación</h3>
+        <p>Comprender la conceptualización, relación y diferencia entre la cadena de abastecimiento y la cadena de suministro, y cómo se aplican en organizaciones reales.</p>
+      </div>
+      <div class="intro-card">
+        <div class="intro-icon">🔗</div>
+        <h3>Relación entre ambos términos</h3>
+        <p>Aunque distintos en alcance y enfoque, ambos conceptos están íntimamente relacionados: la cadena de abastecimiento es un componente dentro del sistema más amplio de la cadena de suministro.</p>
+      </div>
+      <div class="intro-card">
+        <div class="intro-icon">🏭</div>
+        <h3>Aplicación práctica</h3>
+        <p>Se analizan ambos conceptos en el contexto de Ecokhemia Cleaning Science, empresa costarricense de limpieza industrial con más de 13 años de experiencia.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── JUSTIFICACIÓN ── -->
+  <section id="justificacion">
+    <div class="section-tag">JUSTIFICACIÓN</div>
+    <h2>¿Por qué es crucial conocer estos conceptos?</h2>
+    <p class="section-intro">Comprender la diferencia entre cadena de abastecimiento y cadena de suministro permite a los profesionales tomar decisiones estratégicas informadas, optimizar recursos y mejorar la competitividad organizacional.</p>
+    <div class="accordion" id="acc1">
+      <div class="acc-item">
+        <div class="acc-header" onclick="toggleAcc(this)">📊 Impacto económico <span class="acc-arrow">▼</span></div>
+        <div class="acc-body"><div class="acc-body-inner">Según Ballou (2004), los costos logísticos representan entre el 10% y el 15% del PIB en países en desarrollo. Una gestión eficiente de la cadena de abastecimiento puede reducir estos costos hasta en un 30%, generando ahorros significativos para las organizaciones y mejorando su competitividad en el mercado.</div></div>
+      </div>
+      <div class="acc-item">
+        <div class="acc-header" onclick="toggleAcc(this)">🌐 Globalización y competencia <span class="acc-arrow">▼</span></div>
+        <div class="acc-body"><div class="acc-body-inner">En un entorno globalizado, las empresas compiten no solo individualmente sino como cadenas completas. Chopra y Meindl (2021) señalan que la ventaja competitiva actual reside en la eficiencia de toda la cadena de suministro, no solo en la producción interna de cada empresa.</div></div>
+      </div>
+      <div class="acc-item">
+        <div class="acc-header" onclick="toggleAcc(this)">🔄 Disrupciones y resiliencia <span class="acc-arrow">▼</span></div>
+        <div class="acc-body"><div class="acc-body-inner">La pandemia de COVID-19 evidenció la vulnerabilidad de las cadenas de suministro globales. Las empresas que contaban con una gestión robusta de abastecimiento y suministro lograron adaptarse más rápidamente a las disrupciones, demostrando la importancia estratégica de estos conceptos.</div></div>
+      </div>
+      <div class="acc-item">
+        <div class="acc-header" onclick="toggleAcc(this)">📱 Transformación digital <span class="acc-arrow">▼</span></div>
+        <div class="acc-body"><div class="acc-body-inner">La integración de tecnologías como IoT, Big Data e Inteligencia Artificial está transformando la gestión de cadenas de suministro. Comprender los fundamentos conceptuales es esencial para aprovechar estas tecnologías de manera efectiva.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CONCEPTOS ── -->
+  <section id="conceptos">
+    <div class="section-tag">CONCEPTOS</div>
+    <h2>Definiciones Fundamentales</h2>
+    <p class="section-intro">Explore cada concepto en detalle tocando las pestañas a continuación.</p>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab('t1', this)">Cadena de Abastecimiento</button>
+      <button class="tab-btn" onclick="showTab('t2', this)">Cadena de Suministro</button>
+      <button class="tab-btn" onclick="showTab('t3', this)">Historia y Evolución</button>
+    </div>
+
+    <div id="t1" class="tab-content active">
+      <div class="card">
+        <h3>🏪 Cadena de Abastecimiento</h3>
+        <div class="cita">"La cadena de abastecimiento comprende todas las actividades asociadas con el flujo y transformación de bienes desde la etapa de materias primas hasta el usuario final." <span>— Ballou, R. H. (2004). Logística: Administración de la cadena de suministro.</span></div>
+        <p style="margin-bottom:14px">La cadena de abastecimiento se enfoca en el flujo de materiales e información <strong>desde el proveedor hacia la empresa</strong>. Incluye la adquisición de materias primas, su transformación y la entrega al punto de venta o consumidor final.</p>
+        <p><strong>Actividades principales:</strong></p>
+        <ul style="margin-top:10px;padding-left:20px;color:#555;font-size:14px;line-height:2">
+          <li>Selección y gestión de proveedores</li>
+          <li>Compras y adquisición de materiales</li>
+          <li>Recepción y almacenamiento de insumos</li>
+          <li>Control de inventarios</li>
+          <li>Gestión de transporte de entrada (inbound logistics)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="t2" class="tab-content">
+      <div class="card">
+        <h3>🌐 Cadena de Suministro</h3>
+        <div class="cita">"La cadena de suministro engloba todos los eslabones que conectan a los proveedores con los clientes finales, incluyendo fabricantes, distribuidores, minoristas e incluso el reciclaje al final de la vida útil del producto." <span>— Chopra, S. & Meindl, P. (2021). Supply Chain Management.</span></div>
+        <p style="margin-bottom:14px">La cadena de suministro es un concepto más amplio que incluye la totalidad del sistema logístico: <strong>desde el origen de las materias primas hasta el consumidor final</strong>, incluyendo el flujo de retorno (logística inversa).</p>
+        <p><strong>Actividades principales:</strong></p>
+        <ul style="margin-top:10px;padding-left:20px;color:#555;font-size:14px;line-height:2">
+          <li>Planificación estratégica de la demanda</li>
+          <li>Producción y manufactura</li>
+          <li>Distribución y entrega al cliente</li>
+          <li>Gestión de relaciones con clientes (CRM)</li>
+          <li>Logística inversa y sostenibilidad</li>
+          <li>Tecnología e información integrada</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="t3" class="tab-content">
+      <div class="card">
+        <h3>📅 Historia y Evolución</h3>
+        <table style="margin-top:12px">
+          <thead><tr><th>Período</th><th>Hito</th></tr></thead>
+          <tbody>
+            <tr><td>1960s</td><td>Surge la distribución física como disciplina. Enfoque en reducción de costos de transporte y almacenamiento.</td></tr>
+            <tr><td>1980s</td><td>El término "Supply Chain Management" es acuñado por Oliver y Webber (1982). Integración de proveedores y clientes.</td></tr>
+            <tr><td>1990s</td><td>Globalización de las cadenas. ERP y tecnologías de información transforman la gestión.</td></tr>
+            <tr><td>2000s</td><td>E-commerce y lean manufacturing. Mayor énfasis en velocidad y flexibilidad.</td></tr>
+            <tr><td>2010s</td><td>Big Data, IoT y digitalización. Cadenas de suministro inteligentes.</td></tr>
+            <tr><td>2020s</td><td>Resiliencia post-pandemia. Sostenibilidad, nearshoring y automatización con IA.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── DIFERENCIAS ── -->
+  <section id="diferencias">
+    <div class="section-tag">COMPARACIÓN</div>
+    <h2>Diferencias y Similitudes</h2>
+    <p class="section-intro">Aunque relacionados, estos dos términos tienen alcances, enfoques y objetivos distintos.</p>
+
+    <div class="compare-grid" style="margin-bottom:24px">
+      <div class="compare-card">
+        <div class="compare-header abastecimiento">🏪 Cadena de Abastecimiento</div>
+        <div class="compare-body">
+          <div class="compare-item">Enfoque en la entrada de materiales a la organización</div>
+          <div class="compare-item">Alcance desde el proveedor hasta la empresa</div>
+          <div class="compare-item">Prioriza la disponibilidad y el costo de insumos</div>
+          <div class="compare-item">Gestiona relaciones con proveedores</div>
+          <div class="compare-item">Orientada a la eficiencia de compras e inventario</div>
+          <div class="compare-item">Foco operativo y táctico</div>
+        </div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-header suministro">🌐 Cadena de Suministro</div>
+        <div class="compare-body">
+          <div class="compare-item">Enfoque integral desde origen hasta consumidor final</div>
+          <div class="compare-item">Alcance total: proveedor → producción → cliente</div>
+          <div class="compare-item">Prioriza la satisfacción del cliente y el valor total</div>
+          <div class="compare-item">Gestiona relaciones con todos los actores</div>
+          <div class="compare-item">Orientada a la creación de valor en toda la red</div>
+          <div class="compare-item">Foco estratégico y sistémico</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Criterio</th><th>Cadena de Abastecimiento</th><th>Cadena de Suministro</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Alcance</td><td>Proveedor → Empresa</td><td>Proveedor → Empresa → Cliente final</td></tr>
+          <tr><td>Flujo principal</td><td>Materiales e insumos entrantes</td><td>Materiales, información y dinero (bidireccional)</td></tr>
+          <tr><td>Objetivo</td><td>Garantizar disponibilidad de insumos</td><td>Maximizar valor para el cliente</td></tr>
+          <tr><td>Enfoque</td><td>Compras, inventario, logística de entrada</td><td>Estrategia integral de negocio</td></tr>
+          <tr><td>Actores clave</td><td>Proveedores y empresa</td><td>Proveedores, empresa, distribuidores, clientes</td></tr>
+          <tr><td>Horizon temporal</td><td>Operativo y táctico</td><td>Estratégico y de largo plazo</td></tr>
+          <tr><td>Tecnología</td><td>ERP, sistemas de compras</td><td>ERP, CRM, WMS, TMS, IoT, IA</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── FLUJO ── -->
+  <section id="flujo">
+    <div class="section-tag">PROCESO</div>
+    <h2>Flujo de la Cadena de Suministro</h2>
+    <p class="section-intro">Visualización del proceso completo desde la materia prima hasta el consumidor final.</p>
+    <div class="flow-wrap">
+      <div class="flow">
+        <div class="flow-step"><div class="icon">⛏️</div><div class="label">Materia Prima</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="icon">🏭</div><div class="label">Producción / Proveedores</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="icon">🚚</div><div class="label">Transporte Logístico</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="icon">🏬</div><div class="label">Centro de Distribución</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="icon">🚛</div><div class="label">Transporte Salida</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="icon">🏪</div><div class="label">Punto de Venta</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="icon">👤</div><div class="label">Cliente Final</div></div>
+      </div>
+      <div style="margin-top:20px;padding:14px 20px;background:var(--lgray);border-radius:10px;font-size:13px;color:var(--gray);text-align:center">
+        <strong style="color:var(--blue)">Cadena de Abastecimiento</strong> → cubre desde Materia Prima hasta Producción/Proveedores &nbsp;|&nbsp;
+        <strong style="color:var(--teal)">Cadena de Suministro</strong> → cubre el flujo completo de extremo a extremo
+      </div>
+    </div>
+  </section>
+
+  <!-- ── IMPORTANCIA ── -->
+  <section id="importancia">
+    <div class="section-tag">IMPORTANCIA</div>
+    <h2>¿Por qué son importantes estas cadenas?</h2>
+    <p class="section-intro">La gestión eficiente de ambas cadenas impacta directamente en la competitividad, los costos y la satisfacción del cliente.</p>
+    <div class="imp-grid">
+      <div class="imp-card"><div class="imp-icon">💰</div><h4>Reducción de costos</h4><p>Una cadena bien gestionada reduce costos operativos hasta un 30% mediante optimización de inventarios y transporte.</p></div>
+      <div class="imp-card"><div class="imp-icon">⚡</div><h4>Mayor velocidad</h4><p>Procesos integrados permiten responder más rápido a los cambios en la demanda del mercado.</p></div>
+      <div class="imp-card"><div class="imp-icon">😊</div><h4>Satisfacción del cliente</h4><p>El producto correcto llega en el momento y lugar adecuados, mejorando la experiencia del consumidor.</p></div>
+      <div class="imp-card"><div class="imp-icon">🌿</div><h4>Sostenibilidad</h4><p>Cadenas eficientes reducen el desperdicio y la huella de carbono, respondiendo a exigencias ambientales.</p></div>
+      <div class="imp-card"><div class="imp-icon">🛡️</div><h4>Resiliencia</h4><p>Una cadena diversificada resiste mejor las disrupciones globales como pandemias o crisis geopolíticas.</p></div>
+      <div class="imp-card"><div class="imp-icon">📈</div><h4>Ventaja competitiva</h4><p>Las empresas con cadenas de suministro superiores obtienen márgenes más altos y mayor participación de mercado.</p></div>
+    </div>
+  </section>
+
+  <!-- ── EMPRESA ── -->
+  <section id="empresa">
+    <div class="section-tag">EJEMPLIFICACIÓN</div>
+    <h2>Aplicación en Ecokhemia Cleaning Science</h2>
+    <p class="section-intro">Análisis de cómo ambas cadenas operan en una empresa costarricense de servicios de limpieza industrial.</p>
+
+    <div class="empresa-card">
+      <h3>🧹 Ecokhemia Cleaning Science</h3>
+      <p class="sub">Empresa costarricense • +13 años de experiencia • Limpieza industrial y comercial • Costa Rica</p>
+      <div class="empresa-grid">
+        <div class="empresa-box">
+          <h4>🏪 CADENA DE ABASTECIMIENTO</h4>
+          <p>Ecokhemia gestiona la adquisición de productos químicos de limpieza (desengrasantes, desinfectantes, ácidos), equipos especializados y robots PUDU a través de proveedores nacionales e internacionales. El proceso incluye evaluación de proveedores, negociación de precios y gestión de inventarios de insumos en bodega.</p>
+        </div>
+        <div class="empresa-box">
+          <h4>🌐 CADENA DE SUMINISTRO</h4>
+          <p>La cadena de suministro de Ecokhemia abarca desde la adquisición de insumos hasta la prestación del servicio al cliente final. Incluye la planificación de rutas de atención, asignación de equipos de trabajo, traslado de personal a los sitios, ejecución del servicio y retroalimentación del cliente para mejorar futuros servicios.</p>
+        </div>
+        <div class="empresa-box">
+          <h4>⚡ DESAFÍO IDENTIFICADO</h4>
+          <p>La coordinación logística entre la gestión de insumos (abastecimiento) y la entrega del servicio (suministro) representaba un reto operativo. La falta de un sistema integrado generaba ineficiencias en la distribución de materiales a los distintos sitios de trabajo.</p>
+        </div>
+        <div class="empresa-box">
+          <h4>✅ SOLUCIÓN IMPLEMENTADA</h4>
+          <p>Implementación de EkoRutinas, un sistema digital de gestión de rutinas que mejora la coordinación logística entre turnos, optimiza la distribución de tareas y recursos, y permite dar seguimiento en tiempo real al cumplimiento de actividades operativas.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Proceso Logístico</th><th>Cadena de Abastecimiento</th><th>Cadena de Suministro</th></tr></thead>
+        <tbody>
+          <tr><td>Compra de insumos</td><td>Gestión de proveedores de químicos y equipos</td><td>Integración con presupuesto y planificación estratégica</td></tr>
+          <tr><td>Almacenamiento</td><td>Bodega de productos de limpieza</td><td>Distribución de materiales a sitios de trabajo</td></tr>
+          <tr><td>Transporte</td><td>Recepción de pedidos de proveedores</td><td>Traslado de equipos y personal a clientes</td></tr>
+          <tr><td>Servicio</td><td>Disponibilidad de insumos para operación</td><td>Entrega del servicio de limpieza al cliente final</td></tr>
+          <tr><td>Información</td><td>Órdenes de compra e inventario</td><td>CRM, rutinas digitales, retroalimentación del cliente</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── CONCLUSIONES ── -->
+  <section id="conclusiones">
+    <div class="section-tag">CONCLUSIONES</div>
+    <h2>Conclusiones</h2>
+    <div class="concl-list">
+      <div class="concl-item"><div class="concl-num">1</div><p>La cadena de abastecimiento y la cadena de suministro son conceptos complementarios pero distintos. Mientras la primera se enfoca en el flujo de materiales hacia la empresa, la segunda abarca el sistema completo desde el origen hasta el consumidor final, incluyendo el flujo de información y dinero.</p></div>
+      <div class="concl-item"><div class="concl-num">2</div><p>La gestión integrada de ambas cadenas es una fuente de ventaja competitiva crítica. Las empresas que logran optimizar tanto su abastecimiento como su suministro reducen costos, mejoran la satisfacción del cliente y responden con mayor agilidad a los cambios del mercado.</p></div>
+      <div class="concl-item"><div class="concl-num">3</div><p>En empresas de servicios como Ecokhemia Cleaning Science, la aplicación de estos conceptos es igualmente relevante. La eficiencia en la adquisición de insumos (abastecimiento) y la coordinación logística en la entrega del servicio (suministro) impactan directamente en la calidad y rentabilidad de la operación.</p></div>
+      <div class="concl-item"><div class="concl-num">4</div><p>La digitalización es un habilitador fundamental para ambas cadenas. Herramientas tecnológicas como ERP, sistemas de gestión de rutinas y plataformas de seguimiento permiten integrar y optimizar los procesos logísticos de manera eficiente y trazable.</p></div>
+    </div>
+
+    <div style="margin-top:32px">
+      <div class="section-tag">RECOMENDACIONES</div>
+      <h2 style="margin-bottom:20px">Recomendaciones</h2>
+      <div class="rec-grid">
+        <div class="rec-card"><h4>Para organizaciones en general</h4><p>Mapear completamente su cadena de suministro para identificar cuellos de botella, redundancias y oportunidades de mejora antes de invertir en tecnología.</p></div>
+        <div class="rec-card"><h4>Para empresas de servicios</h4><p>Adaptar los conceptos de abastecimiento y suministro a su realidad operativa, considerando que el "producto" que se entrega es el servicio en sí mismo.</p></div>
+        <div class="rec-card"><h4>Para profesionales</h4><p>Mantenerse actualizados en tendencias como Supply Chain 4.0, sostenibilidad logística y gestión de riesgos en la cadena de suministro global.</p></div>
+        <div class="rec-card"><h4>Para Costa Rica</h4><p>Fortalecer la colaboración entre empresas, universidades y gobierno para desarrollar cadenas de suministro más resilientes y competitivas a nivel regional.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── QUIZ INTERACTIVO ── -->
+  <section id="quiz">
+    <div class="section-tag">ELEMENTO INTERACTIVO</div>
+    <h2>Quiz — Pon a prueba tus conocimientos</h2>
+    <p class="section-intro">Responde las preguntas sobre cadena de abastecimiento y cadena de suministro.</p>
+    <div id="quiz-container"></div>
+  </section>
+
+  <!-- ── REFERENCIAS ── -->
+  <section id="referencias">
+    <div class="section-tag">BIBLIOGRAFÍA APA 7</div>
+    <h2>Referencias Bibliográficas</h2>
+    <div class="ref-list">
+      <div class="ref-item">Ballou, R. H. (2004). <em>Logística: Administración de la cadena de suministro</em> (5.ª ed.). Pearson Educación.</div>
+      <div class="ref-item">Chopra, S., & Meindl, P. (2021). <em>Supply chain management: Strategy, planning, and operation</em> (7.ª ed.). Pearson.</div>
+      <div class="ref-item">Council of Supply Chain Management Professionals. (2023). <em>CSCMP supply chain management definitions and glossary</em>. https://cscmp.org/CSCMP/Educate/SCM_Definitions_and_Glossary_of_Terms.aspx</div>
+      <div class="ref-item">Mora, L. A. (2016). <em>Gestión logística integral: Las mejores prácticas en la cadena de abastecimiento</em> (2.ª ed.). Ecoe Ediciones.</div>
+      <div class="ref-item">Oliver, R. K., & Webber, M. D. (1982). Supply chain management: Logistics catches up with strategy. <em>Outlook, 5</em>(1), 42–47.</div>
+      <div class="ref-item">Rushton, A., Croucher, P., & Baker, P. (2022). <em>The handbook of logistics and distribution management</em> (6.ª ed.). Kogan Page.</div>
+      <div class="ref-item">World Economic Forum. (2023). <em>The future of supply chains: Resilience and sustainability</em>. https://www.weforum.org/reports/future-of-supply-chains</div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <strong>Andy Chaves Herrera</strong> · Universidad San Marcos · LINV-01 Distribución y Transportes · 2026<br>
+  <span style="font-size:11px;margin-top:6px;display:block">Muro Digital Colaborativo — Cadena de Abastecimiento vs Cadena de Suministro</span>
+</footer>
+
+<script>
+// ── TABS ─────────────────────────────────────────────
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── ACCORDION ────────────────────────────────────────
+function toggleAcc(header) {
+  const item = header.parentElement;
+  const body = item.querySelector('.acc-body');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.acc-item').forEach(i => {
+    i.classList.remove('open');
+    i.querySelector('.acc-body').classList.remove('open');
+  });
+  if (!isOpen) {
+    item.classList.add('open');
+    body.classList.add('open');
+  }
+}
+
+// ── QUIZ ─────────────────────────────────────────────
+const preguntas = [
+  {
+    q: "¿Cuál es el alcance principal de la cadena de ABASTECIMIENTO?",
+    opts: ["Desde el proveedor hasta el cliente final", "Desde el proveedor hasta la empresa", "Desde la producción hasta la distribución", "Solo la gestión del transporte"],
+    correct: 1,
+    fb: "✅ Correcto. La cadena de abastecimiento cubre desde el proveedor hasta la empresa, enfocándose en la entrada de materiales e insumos."
+  },
+  {
+    q: "¿Qué concepto es más amplio en su alcance?",
+    opts: ["Cadena de abastecimiento", "Cadena de suministro", "Ambos tienen el mismo alcance", "Logística inversa"],
+    correct: 1,
+    fb: "✅ Correcto. La cadena de suministro abarca el sistema completo desde el origen de las materias primas hasta el consumidor final, incluyendo el flujo de retorno."
+  },
+  {
+    q: "¿Quién acuñó el término Supply Chain Management?",
+    opts: ["Chopra y Meindl (2021)", "Oliver y Webber (1982)", "Ballou (2004)", "Porter (1985)"],
+    correct: 1,
+    fb: "✅ Correcto. Oliver y Webber acuñaron el término SCM en 1982 en su artículo 'Supply Chain Management: Logistics catches up with strategy'."
+  },
+  {
+    q: "En Ecokhemia Cleaning Science, ¿qué representa la cadena de abastecimiento?",
+    opts: ["La entrega del servicio de limpieza al cliente", "La adquisición de productos químicos y equipos a proveedores", "La gestión de relaciones con clientes", "El diseño de rutas de distribución"],
+    correct: 1,
+    fb: "✅ Correcto. En Ecokhemia, el abastecimiento se refiere a la adquisición de insumos de limpieza (químicos, equipos, robots PUDU) a través de sus proveedores."
+  },
+  {
+    q: "¿Cuál NO es una característica de la cadena de suministro?",
+    opts: ["Alcance estratégico y sistémico", "Gestiona relaciones con todos los actores", "Se enfoca únicamente en las compras a proveedores", "Incluye logística inversa"],
+    correct: 2,
+    fb: "✅ Correcto. Enfocarse únicamente en compras a proveedores es una característica de la cadena de ABASTECIMIENTO, no de la cadena de suministro, que tiene un alcance mucho más amplio."
+  }
+];
+
+let current = 0, score = 0;
+
+function renderQuiz() {
+  const cont = document.getElementById('quiz-container');
+  if (current >= preguntas.length) {
+    cont.innerHTML = `
+      <div class="quiz-card" style="text-align:center">
+        <div style="font-size:48px;margin-bottom:16px">${score >= 4 ? '🏆' : score >= 3 ? '👍' : '📚'}</div>
+        <div style="font-size:22px;font-weight:700;color:var(--navy);margin-bottom:8px">¡Quiz completado!</div>
+        <div style="font-size:16px;color:var(--gray);margin-bottom:20px">Obtuviste <strong style="color:var(--teal)">${score} de ${preguntas.length}</strong> respuestas correctas</div>
+        <button onclick="current=0;score=0;renderQuiz()" style="padding:12px 28px;background:var(--blue);color:white;border:none;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer">🔄 Volver a intentar</button>
+      </div>`;
+    return;
+  }
+  const p = preguntas[current];
+  cont.innerHTML = `
+    <div class="quiz-card">
+      <div style="color:var(--gray);font-size:13px;margin-bottom:12px">Pregunta ${current+1} de ${preguntas.length}</div>
+      <div class="quiz-q">${p.q}</div>
+      <div class="quiz-opts">
+        ${p.opts.map((o,i) => `<div class="quiz-opt" onclick="answer(${i})">${o}</div>`).join('')}
+      </div>
+      <div class="quiz-feedback" id="qfb"></div>
+      <button class="quiz-next" id="qnext" onclick="next()">Siguiente →</button>
+    </div>`;
+}
+
+function answer(i) {
+  const p = preguntas[current];
+  const opts = document.querySelectorAll('.quiz-opt');
+  opts.forEach(o => o.style.pointerEvents = 'none');
+  const fb = document.getElementById('qfb');
+  const next = document.getElementById('qnext');
+  if (i === p.correct) {
+    opts[i].classList.add('correct');
+    fb.textContent = p.fb;
+    fb.className = 'quiz-feedback show ok';
+    score++;
+  } else {
+    opts[i].classList.add('wrong');
+    opts[p.correct].classList.add('correct');
+    fb.textContent = '❌ Incorrecto. ' + p.fb;
+    fb.className = 'quiz-feedback show fail';
+  }
+  next.className = 'quiz-next show';
+}
+
+function next() { current++; renderQuiz(); }
+
+renderQuiz();
+
+// ── SCROLL SUAVE ─────────────────────────────────────
+document.querySelectorAll('nav a').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelector(a.getAttribute('href')).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
+</body>
+</html>
